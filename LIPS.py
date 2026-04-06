@@ -5,14 +5,14 @@ import time
 from datetime import datetime
 from collections import defaultdict
 
-st.set_page_config(page_title="LP Monitor", layout="wide", page_icon="📊")
+st.set_page_config(page_title="LP Monitor", layout="wide", page_icon="")
 
-st.title("🪙 Real-Time Liquidity Pool Monitor")
-st.markdown("**Search any token pair (e.g. WETH USDC) → live pools across DEXes + price impact simulator**")
+st.title(" Real-Time Liquidity Pool Monitor")
+st.markdown("**Search any token pair (e.g. WETH USDC)  live pools across DEXes + price impact simulator**")
 
-# ====================== SIDEBAR ======================
+#  SIDEBAR 
 with st.sidebar:
-    st.header("🔎 Pair Selection")
+    st.header(" Pair Selection")
     query = st.text_input("Search tokens (e.g. WETH USDC)", value="WETH USDC")
    
     chain_options = ["All", "ethereum", "base", "arbitrum", "solana", "bsc", "polygon"]
@@ -22,13 +22,13 @@ with st.sidebar:
     auto_refresh = st.toggle("Auto-refresh", value=True)
     refresh_sec = st.slider("Refresh interval", 10, 60, 15)
    
-    st.info("💡 Data from DexScreener public API (no key needed)")
+    st.info(" Data from DexScreener public API (no key needed)")
 
-# ====================== SESSION STATE ======================
+#  SESSION STATE 
 if "pool_history" not in st.session_state:
     st.session_state.pool_history = {}   # pairAddress → list of (timestamp, price, liquidity_usd)
 
-# ====================== FETCH DATA ======================
+#  FETCH DATA 
 def fetch_pairs(search_query: str):
     try:
         url = f"https://api.dexscreener.com/latest/dex/search?q={search_query.replace(' ', '%20')}"
@@ -40,7 +40,7 @@ def fetch_pairs(search_query: str):
         return []
 
 # Initial fetch / refresh
-if st.button("🔄 Refresh Now", type="primary") or "raw_pairs" not in st.session_state:
+if st.button(" Refresh Now", type="primary") or "raw_pairs" not in st.session_state:
     with st.spinner("Fetching live pool data..."):
         raw_pairs = fetch_pairs(query)
         st.session_state.raw_pairs = raw_pairs
@@ -55,7 +55,7 @@ if not filtered_pairs:
     st.warning("No pools found. Try another pair like SOL USDC or ETH USDT.")
     st.stop()
 
-# ====================== DATAFRAME ======================
+#  DATAFRAME 
 data_rows = []
 for p in filtered_pairs:
     liq = p.get("liquidity", {})
@@ -75,8 +75,8 @@ for p in filtered_pairs:
 
 df = pd.DataFrame(data_rows)
 
-# ====================== TABS ======================
-tab1, tab2, tab3, tab4 = st.tabs(["📋 All Pools", "📊 Charts by DEX", "📈 Live History", "💱 Price Impact Simulator"])
+#  TABS
+tab1, tab2, tab3, tab4 = st.tabs([" All Pools", " Charts by DEX", " Live History", " Price Impact Simulator"])
 
 with tab1:
     st.dataframe(
@@ -85,7 +85,7 @@ with tab1:
         hide_index=True,
         column_config={"URL": st.column_config.LinkColumn("DexScreener")}
     )
-    st.caption(f"Last updated: {st.session_state.get('last_update', '—')} • {len(df)} pools")
+    st.caption(f"Last updated: {st.session_state.get('last_update', '—')}  {len(df)} pools")
 
 with tab2:
     st.subheader("Liquidity & Volume by Exchange")
@@ -128,12 +128,12 @@ with tab3:
     selected_addresses = st.multiselect(
         "Choose pools to track",
         options=pool_options,
-        format_func=lambda x: df[df["Pair Address"] == x]["Pair"].iloc[0] if not df[df["Pair Address"] == x].empty else x
+        format_func=lambda x: df[df["Pair Address"] = x]["Pair"].iloc[0] if not df[df["Pair Address"] = x].empty else x
     )
    
     # Update history on every refresh
     for addr in selected_addresses:
-        row = df[df["Pair Address"] == addr].iloc[0]
+        row = df[df["Pair Address"] = addr].iloc[0]
         if addr not in st.session_state.pool_history:
             st.session_state.pool_history[addr] = []
         st.session_state.pool_history[addr].append((
@@ -151,10 +151,10 @@ with tab3:
                 times, prices, liqs = zip(*hist)
                 hist_df = pd.DataFrame({"Price (USD)": prices, "Liquidity (USD)": liqs}, index=times)
                 st.line_chart(hist_df, use_container_width=True)
-                st.caption(f"Pool: {df[df['Pair Address']==addr]['Pair'].iloc[0]} on {df[df['Pair Address']==addr]['DEX'].iloc[0]}")
+                st.caption(f"Pool: {df[df['Pair Address']==addr]['Pair'].iloc[0]} on {df[df['Pair Address']=addr]['DEX'].iloc[0]}")
 
 with tab4:
-    st.subheader("💱 Price Impact Simulator (Constant-Product AMM)")
+    st.subheader(" Price Impact Simulator (Constant-Product AMM)")
     if len(df) > 0:
         selected_idx = st.selectbox(
             "Select pool",
@@ -166,7 +166,7 @@ with tab4:
         base_sym = row["Pair"].split("/")[0]
         quote_sym = row["Pair"].split("/")[1]
        
-        direction = st.radio("Direction", [f"{base_sym} → {quote_sym}", f"{quote_sym} → {base_sym}"])
+        direction = st.radio("Direction", [f"{base_sym}  {quote_sym}", f"{quote_sym}  {base_sym}"])
         amount_in = st.number_input("Amount to swap", value=1000.0, min_value=0.01, step=10.0)
         fee_rate = st.slider("DEX fee (%)", 0.0, 1.0, 0.3) / 100.0
        
@@ -202,8 +202,8 @@ with tab4:
     else:
         st.info("No pools available for simulation.")
 
-# ====================== AUTO REFRESH ======================
-st.caption(f"✅ Real-time data • Next refresh in {refresh_sec} seconds")
+#  AUTO REFRESH 
+st.caption(f"✅ Real-time data  Next refresh in {refresh_sec} seconds")
 if auto_refresh:
     time.sleep(refresh_sec)
     st.rerun()
@@ -220,7 +220,7 @@ if auto_refresh:
             <li>Auto-refresh + manual button</li>
             <li>Works on Ethereum, Base, Arbitrum, Solana, etc.</li>
         </ul>
-        Push to GitHub → deploy instantly on Streamlit Cloud. No backend needed!
+        Push to GitHub  deploy instantly on Streamlit Cloud. No backend needed!
     </div>
    
     <p>Enjoy your live DEX liquidity dashboard! 🚀 If you need any tweaks (more chains, V3 tick math, etc.), just let me know.</p>
