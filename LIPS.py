@@ -203,7 +203,7 @@ with tab4:
         st.info("No pools available for simulation.")
 
 #  AUTO REFRESH 
-st.caption(f"✅ Real-time data  Next refresh in {refresh_sec} seconds")
+st.caption(f" Real-time data  Next refresh in {refresh_sec} seconds")
 if auto_refresh:
     time.sleep(refresh_sec)
     st.rerun()
@@ -223,6 +223,6 @@ if auto_refresh:
         Push to GitHub  deploy instantly on Streamlit Cloud. No backend needed!
     </div>
    
-    <p>Enjoy your live DEX liquidity dashboard! 🚀 If you need any tweaks (more chains, V3 tick math, etc.), just let me know.</p>
+    <p>Enjoy your live DEX liquidity dashboard!  If you need any tweaks (more chains, V3 tick math, etc.), just let me know.</p>
 </body>
 </html> 
